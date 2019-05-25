@@ -19,15 +19,17 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        guard let url = URL(string: "api.openweathermap.org/data/2.5/weather?zip=08901,us&units=imperial&appid=1dc61443af413f653a1022de8fafa78c") else { return }
+        guard let url = URL(string: "http://api.openweathermap.org/data/2.5/weather?zip=08901,us&units=imperial&appid=1dc61443af413f653a1022de8fafa78c") else { return }
         
         let task = URLSession.shared.dataTask(with: url) { (data, response, error) in //creates url session, requests data
             
         if let data = data, error == nil {
             
         do {
-            guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String : Any] else { return }
-            guard let weatherDetails = json["Weather"] as? [[String : Any ]], let weatherMain = json["Main"] as? [String: Any] else { return }
+            guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String : Any]
+                else { return }
+             print(json)
+            guard let weatherDetails = json["weather"] as? [[String : Any ]], let weatherMain = json["main"] as? [String: Any] else { return }
             let temp = Int(weatherMain["temp"] as? Double ?? 0)
             let description = (weatherDetails.first?["description"] as? String)?.capitalizingFirstLetter()
             DispatchQueue.main.async {
