@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var weatherDescriptionLabel: UILabel!
     @IBOutlet weak var tempLabel: UILabel!
     @IBOutlet weak var weatherImageView: UIImageView!
+    @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet var background: UIView!
     
     override func viewDidLoad() {
@@ -28,12 +29,16 @@ class ViewController: UIViewController {
         do {
             guard let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String : Any]
                 else { return }
-             print(json)
-            guard let weatherDetails = json["weather"] as? [[String : Any ]], let weatherMain = json["main"] as? [String: Any] else { return }
+             //print(json)
+            guard let weatherDetails = json["weather"] as? [[String : Any ]], let weatherMain = json["main"] as? [String: Any], let weatherLocation = json["name"] as? String
+                else { return }
             let temp = Int(weatherMain["temp"] as? Double ?? 0)
             let description = (weatherDetails.first?["description"] as? String)?.capitalizingFirstLetter()
-            DispatchQueue.main.async {
-                self.setWeather(weather: weatherDetails.first?["main"] as? String, description: description, temp: temp)
+            let location = (weatherLocation as? String)
+            //print("this is weatherDetails: ", weatherDetails)
+            //print("this is weathermain", weatherMain)
+                DispatchQueue.main.async {
+                    self.setWeather(weather: weatherDetails.first?["main"] as? String, description: description, temp: temp, location: location)
             }
         }
         catch{
@@ -45,9 +50,10 @@ class ViewController: UIViewController {
     task.resume()
 }
     
-    func setWeather(weather: String?, description: String?, temp: Int){
+    func setWeather(weather: String?, description: String?, temp: Int, location: String?){
         weatherDescriptionLabel.text = description ?? "..."
         tempLabel.text = "\(temp)°"
+        locationLabel.text = location ?? "..."
         switch weather {
         case "Sunny":
             weatherImageView.image = UIImage(named: "sunny")
